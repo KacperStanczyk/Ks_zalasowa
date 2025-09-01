@@ -1,3 +1,4 @@
+
 """Simple Kanban board with ability to add tasks."""
 from __future__ import annotations
 
@@ -40,10 +41,21 @@ class StatusList(QListWidget):
             task_id = item.data(Qt.UserRole)
             self.on_change(task_id, self.status)
 
+=======
+"""Simple Kanban placeholder."""
+from __future__ import annotations
+
+from PySide6.QtWidgets import (
+    QHBoxLayout,
+    QListWidget,
+    QWidget,
+)
+
 
 class TasksView(QWidget):
     def __init__(self, conn):
         super().__init__()
+
         self.conn = conn
         self.curr_week = iso_week(date.today())
         self.project_id = get_or_create_default_project(conn)
@@ -90,3 +102,11 @@ class TasksView(QWidget):
 
     def _status_changed(self, task_id: int, status: str) -> None:
         update_status(self.conn, task_id, status)
+
+        layout = QHBoxLayout()
+        for name in ["TODO", "IN_PROGRESS", "DONE"]:
+            lst = QListWidget()
+            lst.setObjectName(name)
+            lst.setDragDropMode(QListWidget.InternalMove)
+            layout.addWidget(lst)
+        self.setLayout(layout)

@@ -5,6 +5,7 @@ import sqlite3
 from datetime import date
 
 
+
 def add_habit(
     conn: sqlite3.Connection,
     name: str,
@@ -30,6 +31,7 @@ def get_active_habits(conn: sqlite3.Connection):
         "SELECT id, name FROM habits WHERE is_active=1 ORDER BY id"
     )
     return cur.fetchall()
+
 
 
 def toggle_binary_habit(conn: sqlite3.Connection, habit_id: int, day: date) -> None:
