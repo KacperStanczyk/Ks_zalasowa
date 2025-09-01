@@ -5,6 +5,35 @@ import sqlite3
 from datetime import date
 
 
+
+def add_habit(
+    conn: sqlite3.Connection,
+    name: str,
+    type_: str,
+    goal_type: str,
+    goal_value: int,
+) -> int:
+    """Insert a new habit and return its id."""
+    cur = conn.execute(
+        """
+        INSERT INTO habits(name, type, goal_type, goal_value)
+        VALUES (?, ?, ?, ?)
+        """,
+        (name, type_, goal_type, goal_value),
+    )
+    conn.commit()
+    return cur.lastrowid
+
+
+def get_active_habits(conn: sqlite3.Connection):
+    """Return all active habits."""
+    cur = conn.execute(
+        "SELECT id, name FROM habits WHERE is_active=1 ORDER BY id"
+    )
+    return cur.fetchall()
+
+
+
 def toggle_binary_habit(conn: sqlite3.Connection, habit_id: int, day: date) -> None:
     cur = conn.execute(
         "SELECT id FROM habit_logs WHERE habit_id=? AND date=?", (habit_id, day)

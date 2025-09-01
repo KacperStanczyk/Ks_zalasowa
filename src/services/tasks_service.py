@@ -5,6 +5,35 @@ import sqlite3
 from typing import Optional
 
 
+def get_or_create_default_project(conn: sqlite3.Connection) -> int:
+    """Ensure a default project exists and return its id."""
+    cur = conn.execute("SELECT id FROM projects WHERE name='General'")
+    row = cur.fetchone()
+    if row:
+        return row["id"]
+    cur = conn.execute(
+        "INSERT INTO projects(name, status) VALUES ('General', 'ACTIVE')"
+    )
+    conn.commit()
+    return cur.lastrowid
+
+
+def get_tasks_for_week(conn: sqlite3.Connection, iso_week: str):
+    """Return tasks assigned to the given ISO week."""
+    cur = conn.execute(
+        """
+        SELECT t.id, t.title, t.status
+        FROM tasks t
+        JOIN weekly_assignments w ON w.task_id=t.id
+        WHERE w.iso_week=?
+        ORDER BY t.id
+        """,
+        (iso_week,),
+    )
+    return cur.fetchall()
+
+
+
 def add_task(
     conn: sqlite3.Connection,
     project_id: int,
