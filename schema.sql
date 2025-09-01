@@ -1,0 +1,65 @@
+-- NAWYKI
+CREATE TABLE habits (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT NOT NULL,
+  type TEXT CHECK(type IN ('binary','quantity')) NOT NULL,
+  goal_type TEXT CHECK(goal_type IN ('daily','weekly','monthly')) NOT NULL,
+  goal_value INTEGER NOT NULL,
+  is_active BOOLEAN NOT NULL DEFAULT 1
+);
+
+CREATE TABLE habit_logs (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  habit_id INTEGER NOT NULL,
+  date DATE NOT NULL,
+  value INTEGER NOT NULL DEFAULT 1,
+  FOREIGN KEY (habit_id) REFERENCES habits(id)
+);
+
+CREATE TABLE habit_archive (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  habit_id INTEGER NOT NULL,
+  archived_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (habit_id) REFERENCES habits(id)
+);
+
+-- PROJEKTY / ZADANIA / PRZYDZIAŁY TYGODNIOWE
+CREATE TABLE projects (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT NOT NULL UNIQUE,
+  status TEXT CHECK(status IN ('ACTIVE','ARCHIVED')) NOT NULL DEFAULT 'ACTIVE',
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE tasks (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  project_id INTEGER NOT NULL,
+  title TEXT NOT NULL,
+  status TEXT CHECK(status IN ('TODO','IN_PROGRESS','DONE','CANCELED')) NOT NULL DEFAULT 'TODO',
+  priority INTEGER CHECK(priority BETWEEN 1 AND 5) NOT NULL DEFAULT 3,
+  estimate INTEGER,
+  notes TEXT,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  closed_at DATETIME,
+  FOREIGN KEY (project_id) REFERENCES projects(id)
+);
+
+CREATE TABLE weekly_assignments (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  task_id INTEGER NOT NULL,
+  iso_week TEXT NOT NULL,
+  planned BOOLEAN NOT NULL DEFAULT 1,
+  rolled_over BOOLEAN NOT NULL DEFAULT 0,
+  UNIQUE(task_id, iso_week),
+  FOREIGN KEY (task_id) REFERENCES tasks(id)
+);
+
+CREATE TABLE app_settings (
+  key TEXT PRIMARY KEY,
+  value TEXT NOT NULL
+);
+
+CREATE TABLE security_meta (
+  key TEXT PRIMARY KEY,
+  value TEXT NOT NULL
+);

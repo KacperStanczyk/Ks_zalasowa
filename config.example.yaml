@@ -1,0 +1,7 @@
+db_plain_path: "./data/app.db"
+db_encrypted_path: "./data/app.db.enc"
+backup_path: "./backup/"
+drive_folder_id: "REPLACE_ME"
+google_token_path: "./data/token.json"
+auto_lock_minutes: 10
+default_view: "minimal"
