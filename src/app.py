@@ -37,10 +37,12 @@ class MainWindow(QMainWindow):
         from ui.today_view import TodayView
         from ui.calendar_view import CalendarView
         from ui.tasks_view import TasksView
+        from ui.reports_view import ReportsView
 
         tabs.addTab(TodayView(conn), "Dziś")
         tabs.addTab(CalendarView(conn), "Kalendarz")
         tabs.addTab(TasksView(conn), "Zadania")
+        tabs.addTab(ReportsView(conn), "Raporty")
         self.setCentralWidget(tabs)
 
 
@@ -48,6 +50,7 @@ def main() -> int:
     config = load_config()
     plain = Path(config["db_plain_path"])
     enc = Path(config["db_encrypted_path"])
+    plain.parent.mkdir(parents=True, exist_ok=True)
     backup_dir = Path(config["backup_path"])
 
     if enc.exists():
