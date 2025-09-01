@@ -33,6 +33,20 @@ def get_tasks_for_week(conn: sqlite3.Connection, iso_week: str):
     return cur.fetchall()
 
 
+def get_backlog_tasks(conn: sqlite3.Connection):
+    """Return tasks that are not assigned to any week."""
+    cur = conn.execute(
+        """
+        SELECT t.id, t.title
+        FROM tasks t
+        LEFT JOIN weekly_assignments w ON w.task_id = t.id
+        WHERE w.task_id IS NULL
+        ORDER BY t.id
+        """
+    )
+    return cur.fetchall()
+
+
 
 def add_task(
     conn: sqlite3.Connection,
@@ -65,4 +79,43 @@ def assign_to_week(
 
 def update_status(conn: sqlite3.Connection, task_id: int, status: str) -> None:
     conn.execute("UPDATE tasks SET status=? WHERE id=?", (status, task_id))
+    conn.commit()
+
+
+def bulk_update(conn: sqlite3.Connection, tasks: list[dict]) -> None:
+    """Create or update tasks in bulk based on a JSON-friendly structure."""
+    default_project = get_or_create_default_project(conn)
+    for item in tasks:
+        task_id = item.get("id")
+        if task_id:
+            fields = []
+            values = []
+            for col in ["title", "priority", "estimate", "notes", "status"]:
+                if col in item:
+                    fields.append(f"{col}=?")
+                    values.append(item[col])
+            if fields:
+                conn.execute(
+                    f"UPDATE tasks SET {', '.join(fields)} WHERE id=?",
+                    (*values, task_id),
+                )
+        else:
+            cur = conn.execute(
+                """
+                INSERT INTO tasks(project_id, title, priority, estimate, notes, status)
+                VALUES (?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    item.get("project_id", default_project),
+                    item["title"],
+                    item.get("priority", 3),
+                    item.get("estimate"),
+                    item.get("notes"),
+                    item.get("status", "TODO"),
+                ),
+            )
+            task_id = cur.lastrowid
+            item["id"] = task_id
+        if "week" in item:
+            assign_to_week(conn, task_id, item["week"])
     conn.commit()
