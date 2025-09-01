@@ -1,6 +1,6 @@
+from __future__ import annotations
 
 """Simple Today view with ability to add habits."""
-from __future__ import annotations
 
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
@@ -18,16 +18,12 @@ from PySide6.QtWidgets import (
 
 from services.habits_service import add_habit, get_active_habits
 
-"""Placeholder Today view."""
-from __future__ import annotations
-
-from datetime import date
-from PySide6.QtWidgets import QVBoxLayout, QWidget, QLabel
-
 
 class TodayView(QWidget):
-    def __init__(self, conn):
+    """Minimal view showing today's habits and allowing new ones."""
 
+    def __init__(self, conn):
+        super().__init__()
         self.conn = conn
 
         layout = QVBoxLayout()
@@ -82,8 +78,4 @@ class TodayView(QWidget):
         item.setData(Qt.UserRole, habit_id)
         self.list.addItem(item)
         self.name_edit.clear()
-
-        layout = QVBoxLayout()
-        layout.addWidget(QLabel("Dzisiejsze nawyki"))
-        self.setLayout(layout)
 

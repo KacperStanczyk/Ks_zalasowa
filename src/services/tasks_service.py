@@ -33,6 +33,20 @@ def get_tasks_for_week(conn: sqlite3.Connection, iso_week: str):
     return cur.fetchall()
 
 
+def get_backlog_tasks(conn: sqlite3.Connection):
+    """Return tasks that are not assigned to any week."""
+    cur = conn.execute(
+        """
+        SELECT t.id, t.title
+        FROM tasks t
+        LEFT JOIN weekly_assignments w ON w.task_id = t.id
+        WHERE w.task_id IS NULL
+        ORDER BY t.id
+        """
+    )
+    return cur.fetchall()
+
+
 
 def add_task(
     conn: sqlite3.Connection,
