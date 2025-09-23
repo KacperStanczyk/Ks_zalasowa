@@ -3,3 +3,8 @@ cryptography
 argon2-cffi
 google-api-python-client
 PyYAML
+jsonschema
+pandas
+matplotlib
+networkx
+plotly

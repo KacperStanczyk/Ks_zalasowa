@@ -8,6 +8,12 @@ import pytest
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
+qtwidgets = pytest.importorskip(
+    "PySide6.QtWidgets",
+    reason="PySide6 with libGL is required for GUI tests",
+    exc_type=ImportError,
+)
+
 import app
 
 
