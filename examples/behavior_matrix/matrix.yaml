@@ -1,0 +1,56 @@
+matrix:
+  - fault_id: "FI.MEM_ECC"
+    component_id: "COMP.BCM"
+    context:
+      start_state: "NORMAL"
+      warm_from_fault_id: null
+    expect:
+      end_state: "SAFE"
+      transition_name: "FAULT_X_TO_SAFE"
+    monitors: ["MON.light_off", "MON.wd"]
+    timing:
+      max_time_ms: 1000
+      tolerance_ms: 50
+      measurement_uncertainty: 20
+    priority: 0.85
+    trace:
+      req_ids: ["REQ-1234", "SRD-45"]
+    version: "1.0.0"
+    tags: ["safety", "boundary"]
+
+  - fault_id: "FI.CAN_GLITCH"
+    component_id: "COMP.BCM"
+    context:
+      start_state: "NORMAL"
+      warm_from_fault_id: null
+    expect:
+      end_state: "DEGRADED"
+      transition_name: "GLITCH_TO_DEGRADED"
+    monitors: ["MON.can_err", "MON.mode_change"]
+    timing:
+      max_time_ms: 500
+      tolerance_ms: 25
+      measurement_uncertainty: 10
+    priority: 0.6
+    trace:
+      req_ids: []
+    version: "1.0.0"
+
+  - fault_id: "FI.SENSOR_FREEZE"
+    component_id: "COMP.ADAS"
+    context:
+      start_state: "ENGAGED"
+      warm_from_fault_id: "FI.SENSOR_DRIFT"
+    expect:
+      end_state: "FALLBACK"
+      transition_name: "FREEZE_TO_FALLBACK"
+    monitors: ["MON.sensor_health", "MON.driver_alert"]
+    timing:
+      max_time_ms: 800
+      tolerance_ms: 40
+      measurement_uncertainty: 15
+    priority: 0.9
+    trace:
+      req_ids: ["REQ-7890"]
+    version: "1.1.0"
+    notes: "High severity safety scenario"

@@ -1,0 +1,7 @@
+{
+  "include_transition": true,
+  "include_recovery": true,
+  "min_priority": 0.5,
+  "max_candidates": 1000,
+  "seed": 1337
+}

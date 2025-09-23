@@ -1,0 +1,4 @@
+fault_id,component_id,context.start_state,context.warm_from_fault_id,expect.end_state,expect.transition_name,monitors,timing.max_time_ms,timing.tolerance_ms,timing.measurement_uncertainty,priority,trace.req_ids,version,tags
+FI.MEM_ECC,COMP.BCM,NORMAL,,SAFE,FAULT_X_TO_SAFE,MON.light_off;MON.wd,1000,50,20,0.85,REQ-1234;SRD-45,1.0.0,safety;boundary
+FI.CAN_GLITCH,COMP.BCM,NORMAL,,DEGRADED,GLITCH_TO_DEGRADED,MON.can_err;MON.mode_change,500,25,10,0.6,,1.0.0,
+FI.SENSOR_FREEZE,COMP.ADAS,ENGAGED,FI.SENSOR_DRIFT,FALLBACK,FREEZE_TO_FALLBACK,MON.sensor_health;MON.driver_alert,800,40,15,0.9,REQ-7890,1.1.0,

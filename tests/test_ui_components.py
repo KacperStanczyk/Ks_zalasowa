@@ -5,6 +5,12 @@ import sqlite3
 from datetime import date
 
 import pytest
+
+qtwidgets = pytest.importorskip(
+    "PySide6.QtWidgets",
+    reason="PySide6 with libGL is required for GUI tests",
+    exc_type=ImportError,
+)
 from PySide6.QtWidgets import QApplication, QLabel
 
 # Ensure Qt uses offscreen rendering
