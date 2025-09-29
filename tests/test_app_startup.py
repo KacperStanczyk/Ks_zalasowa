@@ -8,7 +8,12 @@ import pytest
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
-import app
+
+try:  # pragma: no cover - optional dependency
+    pytest.importorskip("PySide6")
+    import app
+except ImportError as exc:  # pragma: no cover - optional dependency
+    pytest.skip(f"PySide6 runtime dependencies missing: {exc}", allow_module_level=True)
 
 
 def test_main_starts(monkeypatch, tmp_path):
