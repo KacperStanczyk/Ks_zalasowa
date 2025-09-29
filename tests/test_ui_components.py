@@ -5,7 +5,12 @@ import sqlite3
 from datetime import date
 
 import pytest
-from PySide6.QtWidgets import QApplication, QLabel
+
+try:  # pragma: no cover - optional dependency
+    pytest.importorskip("PySide6")
+    from PySide6.QtWidgets import QApplication, QLabel
+except ImportError as exc:  # pragma: no cover - optional dependency
+    pytest.skip(f"PySide6 runtime dependencies missing: {exc}", allow_module_level=True)
 
 # Ensure Qt uses offscreen rendering
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")

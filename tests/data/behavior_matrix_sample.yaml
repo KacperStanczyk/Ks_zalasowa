@@ -1,0 +1,140 @@
+components:
+  - id: COMP.BMS
+    states:
+      - NORMAL
+      - DEGRADED
+      - SAFE
+  - id: COMP.MCU
+    states:
+      - NORMAL
+      - RESET
+      - SAFE
+monitors:
+  - id: MON.RANGE.VOLT
+    plugin: range
+    params:
+      min: 300
+      max: 420
+      expected: 360
+  - id: MON.STATE.RECOVERY
+    plugin: state
+    params: {}
+  - id: MON.TIMING.STARTUP
+    plugin: timing
+    params:
+      budget_ms: 75
+behavior_matrix:
+  - fault_id: FI.BMS.OVERVOLT
+    component_id: COMP.BMS
+    asil: D
+    context:
+      start_state: NORMAL
+    phase: transition
+    expect:
+      end_state: DEGRADED
+      notes: Voltage limiter should engage.
+    monitors:
+      - id: MON.RANGE.VOLT
+        plugin: range
+        params:
+          min: 300
+          max: 420
+          expected: 360
+      - id: MON.STATE.RECOVERY
+        plugin: state
+        params: {}
+    priority: 0.9
+    enabled: true
+    event_type: 1
+    event_family: FRR
+    iso:
+      environments:
+        - HIL
+      methods:
+        test:
+          - Functional Test
+    trace:
+      req_ids:
+        - REQ-001
+        - REQ-005
+  - fault_id: FI.BMS.OVERVOLT
+    component_id: COMP.BMS
+    asil: D
+    context:
+      start_state: DEGRADED
+      warm_from_fault_id: FI.BMS.OVERVOLT
+    phase: recovery
+    expect:
+      end_state: NORMAL
+    monitors:
+      - id: MON.STATE.RECOVERY
+        plugin: state
+        params: {}
+      - id: MON.TIMING.STARTUP
+        plugin: timing
+        params:
+          budget_ms: 75
+    priority: 0.6
+    enabled: true
+    event_type: 1
+    event_family: FRR
+    iso:
+      environments:
+        - HIL
+      methods:
+        test:
+          - Functional Test
+    trace:
+      req_ids:
+        - REQ-005
+  - fault_id: FI.MCU.RESET
+    component_id: COMP.MCU
+    asil: C
+    context:
+      start_state: NORMAL
+    phase: transition
+    expect:
+      end_state: RESET
+    monitors:
+      - id: MON.TIMING.STARTUP
+        plugin: timing
+        params:
+          budget_ms: 75
+    priority: 0.4
+    enabled: false
+    event_type: 3
+    event_family: MODE
+    iso:
+      environments:
+        - ECU_NET
+      methods:
+        test:
+          - Structural Test
+    trace:
+      req_ids:
+        - REQ-010
+  - fault_id: FI.MCU.RECOVER
+    component_id: COMP.MCU
+    asil: C
+    context:
+      start_state: RESET
+    phase: recovery
+    expect:
+      end_state: NORMAL
+    monitors:
+      - id: MON.STATE.RECOVERY
+        plugin: state
+        params: {}
+    priority: 0.5
+    enabled: true
+    event_type: 3
+    event_family: MODE
+    iso:
+      environments:
+        - ECU_NET
+      methods:
+        test:
+          - Structural Test
+    trace:
+      req_ids:
+        - REQ-011
